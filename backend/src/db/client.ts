@@ -7,12 +7,16 @@ types.setTypeParser(1082, (val: string) => val);
 
 // Pool is shared across all requests — do not create per-request pools.
 // Connection string is read from DATABASE_URL env variable.
+const isProduction = process.env.NODE_ENV === 'production' ||
+  (process.env.DATABASE_URL ?? '').includes('render.com');
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL ||
     'postgresql://simulator:simulator@localhost:5432/revenue_simulator',
   max: 20,
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 2_000,
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
 });
 
 pool.on('error', (err) => {
