@@ -1,4 +1,4 @@
-import { Pool, QueryResult, types } from 'pg';
+import { Pool, QueryResult, QueryResultRow, types } from 'pg';
 
 // Return DATE columns as plain "YYYY-MM-DD" strings instead of JS Date objects.
 // Without this, pg converts DATE → midnight UTC → toISOString() shifts the day
@@ -20,7 +20,7 @@ pool.on('error', (err) => {
 });
 
 // Typed query helper — keeps routes clean
-export async function query<T = Record<string, unknown>>(
+export async function query<T extends QueryResultRow = Record<string, unknown>>(
   text: string,
   params?: unknown[]
 ): Promise<QueryResult<T>> {
